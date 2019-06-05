@@ -1269,7 +1269,10 @@ class global_navigation extends navigation_node {
             }
         }
         $this->rootnodes['site'] = $this->add_course($SITE);
-        $this->rootnodes['myprofile'] = $this->add(get_string('profile'), null, self::TYPE_USER, null, 'myprofile');
+        //GESMOD-801
+        //$this->rootnodes['myprofile'] = $this->add(get_string('profile'), null, self::TYPE_USER, null, 'myprofile');
+        $this->rootnodes['myprofile'] = $this->add(get_string('profile_msgs'), null, self::TYPE_USER, null, 'myprofile');
+        //===========
         $this->rootnodes['currentcourse'] = $this->add(get_string('currentcourse'), null, self::TYPE_ROOTNODE, null, 'currentcourse');
         $this->rootnodes['mycourses'] = $this->add(get_string('mycourses'), null, self::TYPE_ROOTNODE, null, 'mycourses', new pix_icon('i/course', ''));
         $this->rootnodes['courses'] = $this->add(get_string('courses'), new moodle_url('/course/index.php'), self::TYPE_ROOTNODE, null, 'courses');
