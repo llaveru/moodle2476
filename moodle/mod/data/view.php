@@ -231,6 +231,8 @@
     // The code will be much nicer than this eventually.
     $title = $courseshortname.': ' . format_string($data->name);
 
+	//GESMOD-61 Comentado bloque
+    
     if ($PAGE->user_allowed_editing()) {
         // Change URL parameter and block display string value depending on whether editing is enabled or not
         if ($PAGE->user_is_editing()) {
@@ -243,6 +245,8 @@
         $url = new moodle_url($CFG->wwwroot.'/mod/data/view.php', array('id' => $cm->id, 'edit' => $urlediting));
         $PAGE->set_button($OUTPUT->single_button($url, $strediting));
     }
+   
+    //==================================
 
     if ($mode == 'asearch') {
         $PAGE->navbar->add(get_string('search'));

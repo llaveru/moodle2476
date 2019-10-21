@@ -12,7 +12,10 @@ class mod_data_import_form extends moodleform {
         global $CFG;
         $mform =& $this->_form;
         $cmid = $this->_customdata['id'];
-
+        //GESMOD-564 GITLAB#188
+        $mform->addElement('header', 'uploadrecords', get_string('uploadrecords', 'mod_data'));
+        $mform->addHelpButton('uploadrecords', 'uploadrecords', 'mod_data');
+        //============
         $mform->addElement('filepicker', 'recordsfile', get_string('csvfile', 'data'));
 
         $delimiters = csv_import_reader::get_delimiter_list();

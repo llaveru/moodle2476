@@ -93,7 +93,9 @@ $CFG->dboptions = array(
 // If you need both intranet and Internet access please read
 // http://docs.moodle.org/en/masquerading
 
-$CFG->wwwroot   = 'http://192.168.24.76';
+//esta ip es la del equipo anfitrion, por las reglas de la maquina en virtual box, al acceder
+//a traves de esta ip de la maquina anfitrion, nos deriva a localhost:80 de  esta maquina linux
+$CFG->wwwroot   = 'http://192.168.24.26:888';
 
 
 //=========================================================================

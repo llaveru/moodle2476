@@ -295,12 +295,33 @@ class data_field_picture extends data_field_base {
     }
 
     function text_export_supported() {
-        return false;
+        //GESMOD-762 GITLAB#227- la exportacion se controla con este resultado en el formulario de exportacion.
+        //return false;
+        return true;
     }
 
     function file_ok($path) {
         return true;
     }
+
+    //GESMOD-762 GITLAB#227- esta funcion es la que se llama para rellenar el valor del campo, sobrescrito segun el campo.
+    function export_text_value($record) {
+        
+        $fs = get_file_storage();
+        // Get file
+        if($file = $this->get_file($record->recordid)){
+            $bin = $file->get_content();
+            $contentraw = addslashes(base64_encode( $bin ));
+            $record->contentraw = $contentraw;
+            //almacenamos como json el objeto content de tipo imagen para replicarlo en la importacion.
+            $return = json_encode($record);
+        }else{
+            $return = null;
+        }    
+        //almacenamos como json el objeto content de tipo imagen para replicarlo en la importacion.
+        return $return;
+    }
+    //===========
 
     /**
      * Custom notempty function

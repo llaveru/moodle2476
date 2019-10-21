@@ -24,7 +24,8 @@ function list() {
 
 function single() {
     var imageDiv = document.getElementById("singleimage");
-
+    //GESMOD-563 - añadir linea
+    var imageImg = document.getElementById("singleimage").firstChild.firstChild;
     if (imageDiv) {
         currentHeight = imageDiv.offsetHeight;
         currentWidth  = imageDiv.offsetWidth;
@@ -33,7 +34,9 @@ function single() {
             ratio = maxHeight / currentHeight;
             imageDiv.style.width = (currentWidth*ratio) + 'px';
             imageDiv.style.height = (currentHeight*ratio) + 'px';
-
+            //GESMOD-563 - añadir dos lineas
+            imageImg.style.width = (currentWidth*ratio) + 'px';
+            imageImg.style.height = (currentHeight*ratio) + 'px';
         }
     }
 }

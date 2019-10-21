@@ -55,6 +55,10 @@
             // and should be weaker than those required to edit Templates, Fields and Presets.
             $row[] = new tabobject('export', new moodle_url('/mod/data/export.php', array('d' => $data->id)),
                          get_string('export', 'data'));
+             //GESMOD-564 GITLAB#188
+            $strimport = explode(' ',get_string('importentries', 'data'));
+            $row[] = new tabobject('import',new moodle_url('/mod/data/import.php', array('d' => $data->id)),$strimport[0]);
+            //===============             
         }
         if (has_capability('mod/data:managetemplates', $context)) {
             if ($currenttab == 'list') {

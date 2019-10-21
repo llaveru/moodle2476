@@ -121,15 +121,20 @@ foreach ($datas as $data) {
     }
 
     if ($usesections) {
-        if ($data->section !== $currentsection) {
-            if ($data->section) {
+        //GESMOD-750 GITLAB#224
+        //if ($data->section !== $currentsection) {
+        //GESMOD-750 GITLAB#224
+            //if ($data->section) {
+            if (isset($data->section)) {
                 $printsection = get_section_name($course, $data->section);
             }
-            if ($currentsection !== '') {
+            //GESMOD-750 GITLAB#224
+            //if ($currentsection !== '') {
+            if ( $currentsection !== '' && $currentsection !== $data->section) {
                 $table->data[] = 'hr';
             }
             $currentsection = $data->section;
-        }
+        //}
         $row = array ($printsection, $link, format_text($data->intro, $data->introformat, $options), $numrecords, $numunapprovedrecords);
 
     } else {

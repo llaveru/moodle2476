@@ -96,6 +96,9 @@ $capabilities = array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
+// GESMOD-680 GITLAB#359 se añade capabilitie para permitir tambien viewrating a los estudiantes
+            'student' => CAP_ALLOW,
+//===================            
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW

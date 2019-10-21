@@ -20,7 +20,7 @@
 
 <field>
 <type>picture</type>
-<name>image</name>
+<name>Imagen</name>
 <param1>100%</param1>
 <param2>100%</param2>
 <param3>2097152</param3>
@@ -29,12 +29,12 @@
 
 <field>
 <type>text</type>
-<name>title</name>
+<name>Título</name>
 </field>
 
 <field>
 <type>text</type>
-<name>caption</name>
+<name>Pie de Foto</name>
 </field>
 
 </preset>

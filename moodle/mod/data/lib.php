@@ -34,7 +34,9 @@ define ('DATA_TIMEADDED', 0);
 define ('DATA_TIMEMODIFIED', -4);
 define ('DATA_TAGS', -5);
 
-define ('DATA_CAP_EXPORT', 'mod/data:viewalluserpresets');
+//GESMOD-564  GITLAB#188- comentar y añadir
+//define ('DATA_CAP_EXPORT', 'mod/data:viewalluserpresets');
+define ('DATA_CAP_EXPORT', 'mod/data:exportallentries');
 
 define('DATA_PRESET_COMPONENT', 'mod_data');
 define('DATA_PRESET_FILEAREA', 'site_presets');
@@ -3091,7 +3093,14 @@ function data_export_xls($export, $dataname, $count) {
     foreach ($export as $row) {
         $colno = 0;
         foreach($row as $col) {
-            $worksheet[0]->write($rowno, $colno, $col);
+            //GESMOD-565 - cambiamos la llamada aqui en vez de en dentro de write para que solo afecte a mod_data
+            //$worksheet[0]->write($rowno, $colno, $col);
+            if (preg_match("/^[fh]tt?p:\/\//", $col)) {
+                $worksheet[0]->write_string($rowno, $colno, $col);
+            }else{
+                $worksheet[0]->write($rowno, $colno, $col);
+            }
+            //=================
             $colno++;
         }
         $rowno++;
@@ -3191,10 +3200,14 @@ function data_get_exportdata($dataid, $fields, $selectedfields, $currentgroup=0,
     foreach($datarecords as $record) {
         // get content indexed by fieldid
         if ($currentgroup) {
-            $select = 'SELECT c.fieldid, c.content, c.content1, c.content2, c.content3, c.content4 FROM {data_content} c, {data_records} r WHERE c.recordid = ? AND r.id = c.recordid AND r.groupid = ?';
+           //GESMOD-762 GITLAB#227- añadimos el campo c.recordid, al final ya que al en algun momento el array resultante se usa en orden no con los nombres de campo.
+            //$select = 'SELECT c.fieldid, c.content, c.content1, c.content2, c.content3, c.content4 FROM {data_content} c, {data_records} r WHERE c.recordid = ? AND r.id = c.recordid AND r.groupid = ?';
+            $select = 'SELECT c.fieldid, c.content, c.content1, c.content2, c.content3, c.content4, c.recordid FROM {data_content} c, {data_records} r WHERE c.recordid = ? AND r.id = c.recordid AND r.groupid = ?';
             $where = array($record->id, $currentgroup);
         } else {
-            $select = 'SELECT fieldid, content, content1, content2, content3, content4 FROM {data_content} WHERE recordid = ?';
+            //GESMOD-762 GITLAB#227- añadimos el campo recordid, al final ya que al en algun momento el array resultante se usa en orden no con los nombres de campo.
+            //$select = 'SELECT fieldid, content, content1, content2, content3, content4 FROM {data_content} WHERE recordid = ?';
+            $select = 'SELECT fieldid, content, content1, content2, content3, content4, recordid FROM {data_content} WHERE recordid = ?';
             $where = array($record->id);
         }
 

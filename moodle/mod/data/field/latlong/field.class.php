@@ -235,6 +235,7 @@ class data_field_latlong extends data_field_base {
             $value = null;
         }
         $names = explode('_', $name);
+       
         switch ($names[2]) {
             case 0:
                 // update lat

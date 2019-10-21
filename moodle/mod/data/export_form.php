@@ -44,8 +44,10 @@ class mod_data_export_form extends moodleform {
         $str = get_string('csvwithselecteddelimiter', 'data');
         $typesarray[] = $mform->createElement('radio', 'exporttype', null, $str . '&nbsp;', 'csv');
         $typesarray[] = $mform->createElement('select', 'delimiter_name', null, $choices);
+        //GESMOD-565 - lo tenian comentado los de moodle, como explica aqui
         //temporarily commenting out Excel export option. See MDL-19864
-        //$typesarray[] = $mform->createElement('radio', 'exporttype', null, get_string('excel', 'data'), 'xls');
+        $typesarray[] = $mform->createElement('radio', 'exporttype', null, get_string('excel', 'data'), 'xls');
+        //==================================================================================
         $typesarray[] = $mform->createElement('radio', 'exporttype', null, get_string('ods', 'data'), 'ods');
         $mform->addGroup($typesarray, 'exportar', '', array(''), false);
         $mform->addRule('exportar', null, 'required');

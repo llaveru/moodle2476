@@ -60,7 +60,8 @@ class mod_data_mod_form extends moodleform_mod {
         $mform->addHelpButton('maxentries', 'maxentries', 'data');
 
         // ----------------------------------------------------------------------
-        $mform->addElement('header', 'availibilityhdr', get_string('availability'));
+        //GESMOD-55 Comentado bloque para eliminar las opcion DISPONIBILIDAD
+        /*         $mform->addElement('header', 'availibilityhdr', get_string('availability'));
 
         $mform->addElement('date_time_selector', 'timeavailablefrom', get_string('availablefromdate', 'data'),
                            array('optional' => true));
@@ -72,7 +73,7 @@ class mod_data_mod_form extends moodleform_mod {
                            array('optional' => true));
 
         $mform->addElement('date_time_selector', 'timeviewto', get_string('viewtodate', 'data'),
-                           array('optional' => true));
+                           array('optional' => true)); */
 
         // ----------------------------------------------------------------------
         if ($CFG->enablerssfeeds && $CFG->data_enablerssfeeds) {

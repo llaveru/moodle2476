@@ -88,8 +88,11 @@ class data_field_url extends data_field_base {
             $str .= $label;
             $str .= '<input type="text" name="field_' . $this->field->id . '_0" id="' . $fieldid . '" value="' . s($url) . '" ' .
                     'size="40" class="form-control d-inline"/>';
-            $str .= '<button class="btn btn-secondary m-l-1" id="filepicker-button-' . $options->client_id . '" ' .
-                    'style="display:none">' . $straddlink . '</button></td></tr>';
+
+                    //GESMOD-62 Comentada linea, eliminar boton filepicker en url
+
+           // $str .= '<button class="btn btn-secondary m-l-1" id="filepicker-button-' . $options->client_id . '" ' .
+                    //'style="display:none">' . $straddlink . '</button></td></tr>';
             $str .= '<tr><td align="right"><span class="mod-data-input">' . get_string('text', 'data') . ':</span></td><td>';
             $str .= '<input type="text" name="field_' . $this->field->id . '_1" id="field_' . $this->field->id . '_1" ' .
                     'value="' . s($text) . '" size="40" class="form-control d-inline"/></td></tr>';
@@ -99,10 +102,11 @@ class data_field_url extends data_field_base {
             $str .= $label;
             $str .= '<input type="text" name="field_'.$this->field->id.'_0" id="'.$fieldid.'" value="'.s($url).'"';
             $str .= ' size="40" class="mod-data-input form-control d-inline" />';
-            if (count($options->repositories) > 0) {
-                $str .= '<button id="filepicker-button-' . $options->client_id . '" class="visibleifjs btn btn-secondary m-l-1">' .
-                        $straddlink . '</button>';
-            }
+            //GESMOD-62 Comentada linea, eliminar boton filepicker en url
+            //if (count($options->repositories) > 0) {
+            //    $str .= '<button id="filepicker-button-' . $options->client_id . '" class="visibleifjs btn btn-secondary m-l-1">' .
+            //            $straddlink . '</button>';
+            //}
         }
 
         // print out file picker

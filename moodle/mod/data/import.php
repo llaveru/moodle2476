@@ -72,7 +72,13 @@ $PAGE->set_title($data->name);
 $PAGE->set_heading($course->fullname);
 navigation_node::override_active_url(new moodle_url('/mod/data/import.php', array('d' => $data->id)));
 echo $OUTPUT->header();
-echo $OUTPUT->heading_with_help(get_string('uploadrecords', 'mod_data'), 'uploadrecords', 'mod_data');
+//GESMOD-564 GITLAB#188
+//echo $OUTPUT->heading_with_help(get_string('uploadrecords', 'mod_data'), 'uploadrecords', 'mod_data');
+echo $OUTPUT->heading(format_string($data->name));
+echo $OUTPUT->box(format_module_intro('data', $data, $cm->id), 'generalbox', 'intro');
+$currenttab = 'import';
+include('tabs.php');
+//==============
 
 /// Groups needed for Add entry tab
 $currentgroup = groups_get_activity_group($cm);
@@ -80,14 +86,16 @@ $groupmode = groups_get_activity_groupmode($cm);
 
 if (!$formdata = $form->get_data()) {
     /// Upload records section. Only for teachers and the admin.
-    echo $OUTPUT->box_start('generalbox boxaligncenter boxwidthwide');
+    //GESMOD-564 - GITLAB#188 comentar linea
+    //echo $OUTPUT->box_start('generalbox boxaligncenter boxwidthwide');
     require_once('import_form.php');
     $form = new mod_data_import_form(new moodle_url('/mod/data/import.php'));
     $formdata = new stdClass();
     $formdata->d = $data->id;
     $form->set_data($formdata);
     $form->display();
-    echo $OUTPUT->box_end();
+    //GESMOD-564 - GITLAB#188 comentar linea
+    //echo $OUTPUT->box_end();
     echo $OUTPUT->footer();
     die;
 } else {
@@ -136,26 +144,40 @@ if (!$formdata = $form->get_data()) {
 
         $cir->init();
         $recordsadded = 0;
-        while ($record = $cir->next()) {
+
+        while ($record = $cir->next()) { 
+                //$record es un array en cada posicion del array está un campo, cada $record es una fila del csv
+                
+ 
+
             if ($recordid = data_add_record($data, 0)) {  // add instance to data_record
+                 //GESMOD-762 - obtenemos los campos param4 y param5 necesarios para hacer el thumb de la imagen.
+                //$fields = $DB->get_records('data_fields', array('dataid'=>$data->id), '', 'name, id, type');
+                
+                $fields = $DB->get_records('data_fields', array('dataid'=>$data->id), '', 'name, id, type, param4, param5');
+                $arrayFields =[];
+
                 foreach ($fields as $field) {
-                    $fieldid = $fieldnames[$field->field->name];
+                    $fieldid = $field->id;
+                    
+                    array_push($arrayFields, $field->type);
+                    
                     if (isset($record[$fieldid])) {
                         $value = $record[$fieldid];
                     } else {
                         $value = '';
                     }
 
-                    if (method_exists($field, 'update_content_import')) {
+                     if (method_exists($field, 'update_content_import')) {
                         $field->update_content_import($recordid, $value, 'field_' . $field->field->id);
                     } else {
                         $content = new stdClass();
-                        $content->fieldid = $field->field->id;
+                        $content->fieldid = $field->id;
                         $content->content = $value;
                         $content->recordid = $recordid;
                         $DB->insert_record('data_content', $content);
                     }
-                }
+                } 
 
                 if (core_tag_tag::is_enabled('mod_data', 'data_records') &&
                         isset($fieldnames[get_string('tags', 'data')])) {
@@ -171,10 +193,112 @@ if (!$formdata = $form->get_data()) {
                     }
                 }
 
-                $recordsadded++;
+
+                array_pop($record); //debido a que el ultimo registro del array era vacío e innecesario
+
+
+                
+
+                foreach ($record as $key => $value) { //recorro cada celda de la fila del csv, 0,1,2,3...
+                    
+                    $typeField = $arrayFields[$key];
+                    var_dump($field);
+
+                    $content = new stdClass();
+                    $content->fieldid = $field->id;
+                    $content->recordid = $recordid;
+                    //GESMOD-762 - subimos esto desde abajo
+                    $oldcontent = $DB->get_record('data_content', array('fieldid'=>$field->id, 'recordid'=>$recordid));
+                    $content->id = $oldcontent->id;
+
+                    if ($typeField == 'textarea') {
+                        // the only field type where HTML is possible
+                        $value = clean_param($value, PARAM_CLEANHTML);
+                    }  else {
+                        // remove potential HTML:
+                        $patterns[] = '/</';
+                        $replacements[] = '&lt;';
+                        $patterns[] = '/>/';
+                        $replacements[] = '&gt;';
+                        $value = preg_replace($patterns, $replacements, $value);
+
+                    } 
+                    
+                    if ($typeField == 'latlong') {
+                        $values = explode(" ", $value, 2);
+                        // The lat, long values might be in a different float format.
+                        $content->content  = unformat_float($values[0]);
+                        $content->content1 = unformat_float($values[1]);
+                    } else if ($typeField == 'url') {
+                        $values = explode(" ", $value, 2);
+                        $content->content  = $values[0];
+                        if (!empty($content->content) && (strpos($content->content, '://') === false)
+                                && (strpos($content->content, '/') !== 0)) {
+                            $content->content = 'http://' . $content->content;
+                        }
+                        // The url field doesn't always have two values (unforced autolinking).
+                        if (count($values) > 1) {
+                            $content->content1 = $values[1];
+                        }
+                    } else if ($typeField == 'picture') {
+                        if($value){
+                            
+                            $record = json_decode($value);
+                                                        
+                            $fs = get_file_storage();
+                            $file_record = new stdClass();
+                            if (is_object($context)) {
+                                $file_record->contextid = $context->id;
+                            } else {
+                                $file_record->contextid = $context;
+                            }
+                            $file_record->component = 'mod_data';
+                            $file_record->filearea  = 'content';
+                            $file_record->itemid    = $content->id; //ahora lo tenemos al mover su obtencion al principio del foreach  
+
+                            $file_record->filename  = $record->content; //poner uno cualquiera hasta que exportemos el nombre
+                            $file_record->filepath  = '/';
+                           
+                            $file = $fs->create_file_from_string($file_record, base64_decode($record->contentraw));
+                            $content->content = $record->content;
+                            $content->content1 = $record->content1;
+
+                            $thumbfile_record = array('contextid'=>$file->get_contextid(), 
+                                                      'component'=>$file->get_component(),
+                                                      'filearea'=>$file->get_filearea(),
+                                                      'itemid'=>$file->get_itemid(), 
+                                                      'filepath'=>$file->get_filepath(),
+                                                      'filename'=>'thumb_'.$file->get_filename(), 
+                                                      'userid'=>$file->get_userid());
+
+
+                            $fs->convert_image($thumbfile_record, $file, $field->param4, $field->param5, true);
+                       
+                        }
+                    } 
+                    else {
+                          $content->content = $value;
+                        
+                    }
+
+                    
+
+        
+                $DB->update_record('data_content', $content);    
+
+                }
+                            
+                //=============
+
+            $recordsadded++;    
+                
                 print get_string('added', 'moodle', $recordsadded) . ". " . get_string('entry', 'data') . " (ID $recordid)<br />\n";
+                
             }
+
+                
         }
+
         $cir->close();
         $cir->cleanup(true);
     }
