@@ -95,7 +95,7 @@ $CFG->dboptions = array(
 
 //esta ip es la del equipo anfitrion, por las reglas de la maquina en virtual box, al acceder
 //a traves de esta ip de la maquina anfitrion, nos deriva a localhost:80 de  esta maquina linux
-$CFG->wwwroot   = 'http://192.168.24.26:888';
+$CFG->wwwroot   = 'http://192.168.24.26:8888';
 
 
 //=========================================================================
